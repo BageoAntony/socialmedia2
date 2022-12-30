@@ -1,12 +1,10 @@
 {%extends 'base.html'%}
 {%block body_block%}
 <div class="row">
-    <div class="col-3">
-
-    </div>
+    <div class="col-3"></div>
     <div class="col-5">
         <div class="card">
-            <div class="card-body">
+            <div class="cord-body">
                 <form action="" method="post" enctype="multipart/form-data">
                     {%csrf_token%}
                     {{form.as_p}}
@@ -14,47 +12,34 @@
                 </form>
             </div>
         </div>
-        <div class="card">
+        <div class="card mt-3">
             <div class="card-body">
                 {%for p in posts%}
                 <p><small>@{{p.user}}</small></p>
+                <small>{{p.created_date}}</small>
                 <img src="{{p.image.url}}" width="100%" alt="">
-                {%endfor%}
+                <p>{{p.title}}</p>                
+                <a href="{%url 'add-like' p.id%}" class="btn btn-outline-secondary">{{p.likes}}Like</a>
+                <button class="btn btn-outline-primary">comment</button>
+                <form action="{%url 'add-comments' p.id%}" method="post">
+                    {%csrf_token%}
+                    <input type="text" class="form-control" name="comment" required>
+                    <button type="submit" class="btn btn-primary">Add Comment</button>
+                </form>
+                
+                {%for comment in p.posts_comments%}
+                <div class="card-body bg-light mt-2">
+                    <p style="display: inline;"><small>@{{comment.user}}</small></p>
+                    <small>{{comment.created_date}}</small>
+                    <p> {{comment.comment}}</p>
+                    {%endfor%}
+                </div>
+                <hr>
 
             </div>
         </div>
-
+        {%endfor%}
     </div>
-    <div class="col-4">
-
-    </div>
+    <div class="col-4"></div>
 </div>
-<form action="" method="post" enctype="multipart/form-data">
-    {%csrf_token%}
-    {{form.as_p}}
-    <input type="submit" value="submit">
-</form>
-{%for p in posts%}
-{{p.user}}
-{{p.title}}
-<!-- <img src="{{p.image.url}}" alt=""> -->
-{{p.created_date}}
-{{p.likes}}
-<a href="{%url 'add-like' p.id%}" class="btn btn-ouline-secondary">Like</a>
-
-<form action="{%url 'add-comments' p.id%}" method="post">
-    {%csrf_token%}
-    <input type="text" class="form-control" name="comment" required>
-    <button type="submit" class="btn btn-primary">Add comment</button>
-</form>
-    {%for comment in p.posts_comments%}
-    {{comment.user}}
-    {{comment.comment}}
-    {{comment.created_date}}
-    {%endfor%}
-
-
-
-
-{%endfor%}
 {%endblock%}

@@ -9,6 +9,17 @@ from api.models import Posts,Comments
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 
+def signin_required(fn):
+    def wrapper(request,*args,**kw):
+        if not request.user.is_authenticated:
+            messages.error(request,"invalid session")
+            return redirect("signin")
+        else:
+            return fn(request,args,*kw)
+    return wrapper
+
+decs=[signin_required,never_cache]
+
 class SignUpView(CreateView):
     template_name="register.html"
     form_class=UserRegistrationForm
@@ -30,7 +41,7 @@ class SignInView(FormView):
                 return render(request,self.template_name,{"form":form})
 
 
-
+@method_decorator(decs,name="dispatch")
 class IndexView(CreateView,ListView):
     template_name="index.html"
     form_class=PostForm
@@ -44,7 +55,7 @@ class IndexView(CreateView,ListView):
         return super().form_valid(form)
     def get_queryset(self):
         return Posts.objects.all()
-
+decs
 def add_comments(request,*args,**kwargs):
     id=kwargs.get("id")
     pst=Posts.objects.get(id=id)

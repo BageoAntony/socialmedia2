@@ -2,6 +2,13 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Count
 
+class Userprofile(models.Model):
+    user=models.OneToOneField(User,on_delete=models.CASCADE)
+    profile_pic=models.ImageField(upload_to='images',null=True)
+    dateofbirth=models.DateField(null=True)
+    place=models.CharField(max_length=100)
+    bio=models.CharField(max_length=250)
+
 # Create your models here.
 class Posts(models.Model):
     title=models.CharField(max_length=250)
@@ -30,3 +37,8 @@ class Comments(models.Model):
 
     def _str_(self):
         return self.comment
+
+class Friends(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower')
+    date = models.DateTimeField(auto_now_add=True)

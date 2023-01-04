@@ -21,6 +21,7 @@
                 <p>{{p.title}}</p>                
                 <a href="{%url 'add-like' p.id%}" class="btn btn-outline-secondary">{{p.likes}}Like</a>
                 <button class="btn btn-outline-primary">comment</button>
+                
                 <form action="{%url 'add-comments' p.id%}" method="post">
                     {%csrf_token%}
                     <input type="text" class="form-control" name="comment" required>

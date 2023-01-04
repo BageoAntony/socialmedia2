@@ -13,6 +13,8 @@ class PostForm(forms.ModelForm):
         }
 
 class UserRegistrationForm(UserCreationForm):
+    password1=forms.CharField(widget=forms.TextInput(attrs={"class":"form-control"}))
+    password2=forms.CharField(widget=forms.TextInput(attrs={"class":"form-control"}))
 
     class Meta:
         model=User

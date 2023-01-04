@@ -5,9 +5,10 @@ from .forms import LoginForm,UserRegistrationForm,PostForm
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
-from api.models import Posts,Comments
+from api.models import *
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
+from django.contrib.auth.models import User
 
 def signin_required(fn):
     def wrapper(request,*args,**kw):
@@ -31,6 +32,7 @@ class SignInView(FormView):
     def post(self, request,*args,**kw):
         form=LoginForm(request.POST)
         if form.is_valid():
+            
             uname=form.cleaned_data.get("username")
             pwd=form.cleaned_data.get("password")
             usr=authenticate(request,username=uname,password=pwd)
@@ -78,3 +80,40 @@ def like_post_view(request,*args,**kwargs):
 def signout_view(request,*args,**kw):
     logout(request)
     return redirect("signin")
+
+class ProfileView(ListView):
+    template_name="profile.html"
+    model=User
+    context_object_name="users"
+    def get_queryset(self):
+        return User.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["uposts"] = Posts.objects.filter(user=self.request.user)
+        return context
+
+
+class ListPeopleView(ListView):
+    template_name="peoples.html"
+    model = User
+    context_object_name = 'people'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["followings"] = Friends.objects.filter(follower=self.request.user)
+        context["posts"] = Posts.objects.all().order_by('-created_date')
+        return context
+    
+
+    def get_queryset(self):
+        return User.objects.exclude(username=self.request.user)
+ 
+
+def add_follower(request, *args, **kwargs):
+    id = kwargs.get('id')
+    usr = User.objects.get(id=id)
+    if not Friends.objects.filter(user=usr, follower=request.user):
+        Friends.objects.create(user=usr, follower=request.user)
+    else:
+        Friends.objects.get(user=usr, follower=request.user).delete()
+    return redirect("people")

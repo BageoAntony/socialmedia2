@@ -10,4 +10,5 @@ urlpatterns = [
     path("profile/",ProfileView.as_view(),name="profile"),
     path("user/<int:id>/follower/add", add_follower, name="add-follower"),
     path("people",ListPeopleView.as_view(),name="people"),
+    path("post/<int:id>/remove",post_delete,name="post-delete"),
 ]

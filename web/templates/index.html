@@ -13,33 +13,39 @@
             </div>
         </div>
         <div class="card mt-3">
-            <div class="card-body">
+            <div class="mt-3">
                 {%for p in posts%}
-                <p><small>@{{p.user}}</small></p>
-                <small>{{p.created_date}}</small>
-                <img src="{{p.image.url}}" width="100%" alt="">
-                <p>{{p.title}}</p>                
-                <a href="{%url 'add-like' p.id%}" class="btn btn-outline-secondary">{{p.likes}}Like</a>
-                <button class="btn btn-outline-primary">comment</button>
-                
-                <form action="{%url 'add-comments' p.id%}" method="post">
-                    {%csrf_token%}
-                    <input type="text" class="form-control" name="comment" required>
-                    <button type="submit" class="btn btn-primary">Add Comment</button>
-                </form>
-                
-                {%for comment in p.posts_comments%}
-                <div class="card-body bg-light mt-2">
-                    <p style="display: inline;"><small>@{{comment.user}}</small></p>
-                    <small>{{comment.created_date}}</small>
-                    <p> {{comment.comment}}</p>
-                    {%endfor%}
-                </div>
-                <hr>
+                <div class="card">
+                    <p><small>@{{p.user}}</small></p>
+                    <small>{{p.created_date}}</small>
+                    <a href="{%url 'post-delete' p.id%}" class="btn btn-outline-danger">delete</a>
+                    <img src="{{p.image.url}}" width="100%" alt="">
+                    <p>{{p.title}}</p>
+                    <a href="{%url 'add-like' p.id%}" class="btn btn-outline-secondary">{{p.likes}}Like</a>
+                    <button class="btn btn-outline-primary">comment</button>
 
+                    <form action="{%url 'add-comments' p.id%}" method="post">
+                        {%csrf_token%}
+                        <input type="text" class="form-control" name="comment" required>
+                        <button type="submit" class="btn btn-primary">Add Comment</button>
+                    </form>
+
+                    {%for comment in p.posts_comments%}
+                    <div class="card-body bg-light mt-2">
+                        <p style="display: inline;"><small>@{{comment.user}}</small></p>
+                        <small>{{comment.created_date}}</small>
+                        <p> {{comment.comment}}</p>
+                        
+                    </div>
+                    {%endfor%}
+                    <hr>
+
+                </div>
+                {%endfor%}
             </div>
+            
         </div>
-        {%endfor%}
+
     </div>
     <div class="col-4"></div>
 </div>

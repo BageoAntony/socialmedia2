@@ -24,6 +24,7 @@ decs=[signin_required,never_cache]
 class SignUpView(CreateView):
     template_name="register.html"
     form_class=UserRegistrationForm
+    model=User
     success_url=reverse_lazy("signin")
 
 class SignInView(FormView):
@@ -117,3 +118,8 @@ def add_follower(request, *args, **kwargs):
     else:
         Friends.objects.get(user=usr, follower=request.user).delete()
     return redirect("people")
+
+def post_delete(request,*args,**kwargs):
+    id=kwargs.get("id")
+    Posts.objects.get(id=id).delete()
+    return redirect("index")

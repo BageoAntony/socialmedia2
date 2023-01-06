@@ -1,97 +1,99 @@
-{%extends 'index.html'%}
+
+
+
+{%extends 'base.html'%}
+{%load static%}
+
+
 {%block body_block%}
-<style>
-    body {
-        height: 1000vh;
-
-        background-color: #85FFBD;
-        background-image: linear-gradient(45deg, #85FFBD 0%, #dbbabd 100%);
-
-    }
-
-    .container-1 {
-        transform: translate(0, 50%);
-    }
-</style>
-<link rel="stylesheet" href="/web/static/css/profile.css">
+{%csrf_token%}
 <header>
+    <!-- editsaj -->
+    <div class="container card mt-3">
+       
+        <div class="profile">
 
-	<div class="container">
+            <div class="profile-image">
+                <!-- <img src="https://images.unsplash.com/photo-1513721032312-6a18a42c8763?w=152&h=152&fit=crop&crop=faces" alt=""> -->
+                <img src="{{request.user.userprofile.profile_pic.url}}" alt="jfc" class="img-size" style="width: 160px;">
+            </div>
 
-		<div class="profile">
+            <div class="profile-user-settings">
+                <h1 class="profile-user">{{request.user.first_name}} {{request.user.last_name}}</h1><br>
+                <h4 class="profile-user-name">@{{request.user}}</h4>
+                <!-- <button class="btn profile-edit-btn">Edit Profile</button> -->
+                <a href="{%url 'addprofile'%}" class="btn profile-edit-btn">Edit Profile</a>
+                <button class="btn profile-settings-btn" aria-label="profile settings"><i class="fas fa-cog"
+                        aria-hidden="true"></i></button>
+            </div>
+            <div class="profile-stats">
+                <ul>
+                    <li><span class="profile-stat-count">164</span> posts</li>
+                    <li><span class="profile-stat-count">188</span> followers</li>
+                    <li><span class="profile-stat-count">206</span> following</li>
+                </ul>
+            </div>
+            <div class="profile-bio">
+                {%if request.user.about%}
+                <p><span class="profile-real-name"></span> {{request.user.about}}</p>
+                {%else%}
+                <p><span class="profile-real-name"></span> Lorem ipsum dolor sit, amet consectetur
+                    adipisicing elit 📷✈️🏕️</p>
+                {%endif%}
+            </div>
+        </div>
 
-			<div class="profile-image">
-
-				<img src="https://images.unsplash.com/photo-1513721032312-6a18a42c8763?w=152&h=152&fit=crop&crop=faces" alt="">
-
-			</div>
-            
-			<div class="profile-user-settings">
-
-				<h1 class="profile-user-name">{{request.user}}</h1>
-
-				<button class="btn profile-edit-btn"><a href="">Edit Profile</a></button>
-
-				<button class="btn profile-settings-btn" aria-label="profile settings"><i class="fas fa-cog" aria-hidden="true"></i></button>
-
-			</div>
-
-			<div class="profile-stats">
-
-				<ul>
-					<li><span class="profile-stat-count">164</span> posts</li>
-					<li><span class="profile-stat-count">188</span> followers</li>
-					<li><span class="profile-stat-count">206</span> following</li>
-				</ul>
-
-			</div>
-
-			<div class="profile-bio">
-
-				<p><span class="profile-real-name"></span> Lorem ipsum dolor sit, amet consectetur adipisicing elit 📷✈🏕</p>
-
-			</div>
-
-		</div>
-		<!-- End of profile section -->
-
-	</div>
-	<!-- End of container -->
-
+        <!-- End of profile section -->
+    </div>
+    <!-- endedit@saj -->
+    
+    <!-- End of container -->
 </header>
 
+
 <main>
-
-	<div class="container">
-
-		<div class="gallery">
-            {%for p in posts%}
-
-			<div class="gallery-item" tabindex="0">
-
-				<img src="{{p.image.url}}" class="gallery-image" alt="">
-
-				<div class="gallery-item-info">
-
-					<ul>
-						<li class="gallery-item-likes"><span class="visually-hidden">Likes:</span><i class="fas fa-heart" aria-hidden="true"></i> {{p.likes}}</li>
-						<br><li class="gallery-item-comments"><span class="visually-hidden">Comments:</span><i class="fas fa-comment" aria-hidden="true"></i>{{p.comments}}</li><br>
-                        <li class="gallery-item-delete"><span class="visually-hidden">Delete</span><a href="{%url 'post-delete' p.id %}"><i class="fas fa-trash" aria-hidden="true"></i></a></li>
-					</ul>
-
-				</div>
-            
-			</div>
+    <div class="container">
+        <div class="gallery mt-3">
+            {%for p in uposts%}
+            <div class="card mt-3" tabindex="0">
+                <div class="" style="display: inline-flex;">
+                    <div class="col-6"><p><small>@{{p.user}}</small></p></div>
+                    <div class="col-6 d-flex flex-row-reverse">
+                        <a href="{%url 'post-delete' p.id%}" class="btn"><i class="fa-regular fa-trash-can"></i></a>
+                    </div>
+                </div>
+                <small>{{p.created_date}}</small>
+                {%if p.image%}
+                <div>
+                    <img src="{{p.image.url}}" alt="" class="w-100 gallery-image" style="width: 100%; height: 390px;">
+                </div>
+                {%endif%}
+                <p>{{p.description}}</p>
+                <div class="" style="display: inline-flex;">
+                    <a href="#" class="btn btn-outline-danger ms-2">{{p.likes}} <i
+                            class="fa-regular fa-heart"></i></a>
+                    <!-- <button class="btn btn-outline-primary" for>comment</button> -->
+                    <label for="id_comment" class="btn btn-outline-primary ms-2"><i
+                            class="fa-regular fa-comment"></i></label>
+                </div>
+                <form action="#" method="post">
+                    {%csrf_token%}
+                    <input type="text" class="form-control mt-2" name="comment" id="id_comment">
+                    <button type="submit" class="btn btn-primary mt-2 mb-2 ms-1"><i
+                            class="fa-solid fa-paper-plane"></i></button>
+                </form>
+                {%for cmt in p.post_comments%}
+                <div class="card-body bg-light mt-2">
+                    <p style="display: inline;"><small>@{{cmt.user}}</small></p>
+                    <small>{{cmt.created_date}}</small>
+                    <p> {{cmt.comment}}</p>
+                    <hr class="">
+                </div>
+                {%endfor%}
+    
+            </div>
             {%endfor%}
-			
-
-		
-		<!-- End of gallery -->
-
-		<div class="loader"></div>
-
-	</div>
-	<!-- End of container -->
-
+        </div>
+    </div>
+    {%endblock%}
 </main>
-{%endblock%}

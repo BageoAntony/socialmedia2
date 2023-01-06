@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 # Create your views here.
 from django.views.generic import CreateView,FormView,TemplateView,ListView
-from .forms import LoginForm,UserRegistrationForm,PostForm
+from .forms import *
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
@@ -68,6 +68,23 @@ def add_comments(request,*args,**kwargs):
         user=request.user)
     messages.success(request,"you answer posted successfully")
     return redirect("index")  
+
+@method_decorator(decs,name="dispatch")
+class AddProfileView(CreateView):
+    template_name="addprofile.html"
+    form_class=ProfileForm
+    success_url=reverse_lazy("index")
+
+    def post(self,request,args,*kw):
+        form=ProfileForm(data=request.POST,files=request.FILES)
+        if form.is_valid():
+            profile=form.save(commit=False)
+            profile.user=request.user
+            profile.save()
+            return redirect("index")
+            
+        else:
+            return render(request,"addprofile.html  ",{"form":form}) 
 
 def like_post_view(request,*args,**kwargs):
     id=kwargs.get("id")
